@@ -20,10 +20,13 @@ on:
 jobs:
   run-tests:
     # The runner is the temporary machine that executes the steps below.
-    runs-on: ubuntu-latest
     strategy:
       matrix:
+        os: [ubuntu-latest, macos-latest]
         python-version: ["3.11", "3.12"]
+        
+    # Dynamically pick the runner based on the matrix selection
+    runs-on: ${{ matrix.os }}
         
     steps:
       - name: Check out repository
