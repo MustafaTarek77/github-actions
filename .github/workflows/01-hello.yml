@@ -8,7 +8,7 @@ on:
     branches:
       - main
     types:
-      - opened
+      - closed
   # Allow a safe manual run from the Actions tab too.
   workflow_dispatch:
 
@@ -19,4 +19,6 @@ jobs:
 
     steps:
       - name: Say hello
-        run: echo "Hello from GitHub Actions — this pull request is opened, Mustafa Tarek"
+        if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
+        run: echo "Hello from GitHub Actions — this pull request was merged, Mustafa Tarek"
+
