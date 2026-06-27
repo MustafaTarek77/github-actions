@@ -14,16 +14,16 @@ on:
 
   schedule:
     - cron: "0 10 * * *"
-env:
-  PYTHON_VERSION: ${{ secrets.MY_PYTHON_VERSION }}
+# env:
+#   PYTHON_VERSION: ${{ secrets.MY_PYTHON_VERSION }}
   
 jobs:
   run-tests:
     # The runner is the temporary machine that executes the steps below.
     runs-on: ubuntu-latest
-    # strategy:
-    #   matrix:
-    #     python-version: ["3.11", "3.12"]
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
         
     steps:
       - name: Check out repository
@@ -35,8 +35,8 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          #python-version: ${{ matrix.python-version }}
-          python-version: ${{ env.PYTHON_VERSION }}
+          python-version: ${{ matrix.python-version }}
+          # python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Print Python version
         run: python --version
