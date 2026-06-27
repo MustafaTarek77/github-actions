@@ -3,7 +3,7 @@
 name: 01 Hello Workflow
 
 on:
-  # Run automatically when this workflow file changes.
+  # React to pull request activity targeting main.
   pull_request:
     branches:
       - main
@@ -18,6 +18,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Say hello
-        # This single step is enough to show a full workflow run.
-        run: echo "Hello from GitHub Actions and from Mustafa Tarek"
+      - name: Say hello (merged)
+        # "closed" fires both when a PR is merged and when it's closed without merging.
+        if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
+        run: echo "Hello from GitHub Actions — this pull request was merged, Mustafa Tarek"
+
+      - name: Say hello (closed without merging)
+        if: github.event_name == 'pull_request' && github.event.pull_request.merged == false
+        run: echo "Hello from GitHub Actions — this pull request was closed without merging, Mustafa Tarek"
