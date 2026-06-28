@@ -8,6 +8,7 @@ on:
     branches:
       - main
 
+
 env:
   # Keep common image values in one place so the build steps stay readable.
   IMAGE_NAME: tiny-health-app
