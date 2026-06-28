@@ -29,6 +29,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Find matching build run
+        id: find-run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          SHA="${{ github.event.pull_request.merge_commit_sha }}"
+          RUN_ID=$(gh api \
+            "repos/${{ github.repository }}/actions/workflows/03-build-artifact-workflow.yml/runs?head_sha=${SHA}&status=success" \
+            --jq '.workflow_runs[0].id')
+          echo "run_id=$RUN_ID" >> "$GITHUB_OUTPUT"
+          
       - name: Download build artifact
         # Download the exact artifact produced by the build run.
         uses: actions/download-artifact@v4
