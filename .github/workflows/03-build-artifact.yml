@@ -16,7 +16,8 @@ env:
   IMAGE_TAR: tiny-health-app.tar
   IMAGE_METADATA: image-metadata.env
   ARTIFACT_NAME: tiny-health-app-image
-
+  TRIVY_IMAGE_REPORT: trivy-image-scan-report.txt
+  
 jobs:
   build-package:
     # Use a fresh GitHub-hosted runner for the build.
@@ -68,6 +69,17 @@ jobs:
           docker build \
             -t "${IMAGE_NAME}:${{ steps.image-tag.outputs.image_tag }}" \
             .
+
+      - name: Run Trivy Image Scan
+        uses: aquasecurity/trivy-action@v0.35.0
+        with:
+          scan-type: 'image'
+          image-ref: '${{ env.IMAGE_NAME }}:${{ steps.image-tag.outputs.image_tag }}'
+          scanners: 'vuln,secret'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '0'
+          format: 'table'
+          output: '${{ env.TRIVY_IMAGE_REPORT }}'
 
       - name: Save Docker image as artifact file
         run: docker save "${IMAGE_NAME}:${{ steps.image-tag.outputs.image_tag }}" -o "${IMAGE_TAR}"
