@@ -58,7 +58,9 @@ jobs:
 
       - name: Show exact image reference
         # Visibility step so students can see what exact package is being delivered.
-        run: echo "Deploying ${{ steps.image-metadata.outputs.image_reference }}"
+        run: |
+          echo "Deploying ${{ steps.image-metadata.outputs.image_reference }}"
+          echo "Recreated image tag: ${{ steps.image-metadata.outputs.image_tag }}"
 
       - name: Start container
         # Start the exact same tagged image that the build workflow created.
@@ -67,6 +69,10 @@ jobs:
             --name "${CONTAINER_NAME}" \
             -p "${APP_PORT}:8000" \
             "${{ steps.image-metadata.outputs.image_reference }}"
+
+      - name: Show running containers
+        # Visibility step so students can confirm the container is up after startup.
+        run: docker ps
 
       - name: Smoke test deployed app
         # Retry a few times because app startup can take a moment.
@@ -80,6 +86,10 @@ jobs:
           done
           echo "App did not become ready in time."
           exit 1
+
+      - name: Print health response body
+        # Show the exact /health response body once the app is confirmed ready.
+        run: curl --silent "http://127.0.0.1:${APP_PORT}/health"
 
       - name: Stop container
         if: always()
